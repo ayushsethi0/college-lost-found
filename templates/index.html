@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <form class="d-flex" method="get">
+    <input class="form-control me-2" name="q" placeholder="Search item or location..." value="{{ q }}">
+    <select class="form-select me-2" name="status">
+      <option value="">All</option>
+      <option value="Lost" {% if status_filter == 'Lost' %}selected{% endif %}>Lost</option>
+      <option value="Found" {% if status_filter == 'Found' %}selected{% endif %}>Found</option>
+    </select>
+    <button class="btn btn-primary">Search</button>
+  </form>
+
+  <a href="{{ url_for('add_item') }}" class="btn btn-success">+ Report Lost/Found</a>
+</div>
+
+<div class="row g-4">
+  {% for item in items %}
+  <div class="col-md-4">
+    <div class="card h-100 shadow">
+      {% if item.photo %}
+        <img src="{{ url_for('static', filename='uploads/' + item.photo) }}" class="card-img-top" alt="photo">
+      {% endif %}
+
+      <div class="card-body">
+        <h5 class="card-title mb-1">{{ item.title }}</h5>
+        <p class="mb-2"><span class="text-info fw-semibold">{{ item.status }}</span></p>
+
+        <p class="small mb-2">{{ item.description }}</p>
+
+        {% if item.location %}
+          <!-- LOCATION in same yellow as contact -->
+          <p class="small text-warning mb-1">📍 {{ item.location }}</p>
+        {% endif %}
+
+        {% if item.contact %}
+          <p class="small text-warning">📞 {{ item.contact }}</p>
+        {% endif %}
+      </div>
+
+      <!-- DELETE BUTTON -->
+      <div class="card-footer bg-transparent border-0 text-end">
+        <form method="post" action="{{ url_for('delete_item', id=item.id) }}"
+              onsubmit="return confirm('Delete this entry?');" class="d-inline">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% else %}
+    <p class="text-center text-light mt-5">No items posted yet.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
